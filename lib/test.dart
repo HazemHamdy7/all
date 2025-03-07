@@ -1,273 +1,314 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
+import 'package:flutter/services.dart';
+import 'dart:math' as math;
 
-class GuardSelectionScreen extends StatefulWidget {
-  const GuardSelectionScreen({Key? key}) : super(key: key);
+class EmergencyType {
+  final String name;
+  final IconData icon;
+  final Color color;
 
-  @override
-  State<GuardSelectionScreen> createState() => _GuardSelectionScreenState();
+  EmergencyType({required this.name, required this.icon, required this.color});
 }
 
-class _GuardSelectionScreenState extends State<GuardSelectionScreen> {
-  final PageController _pageController = PageController();
-  int _currentPage = 0;
+class SOSScreen extends StatefulWidget {
+  const SOSScreen({Key? key}) : super(key: key);
 
-  final List<Guard> guardTypes = [
-    Guard(
-      name: 'الحارس التكتيكي',
-      description: 'مدرب على التعامل مع المواقف عالية الخطورة',
-      lottieAsset: 'assets/animations/tactical_guard.json',
-      hourlyRate: 50.0,
+  @override
+  State<SOSScreen> createState() => _SOSScreenState();
+}
+
+class _SOSScreenState extends State<SOSScreen> with TickerProviderStateMixin {
+  late AnimationController _waveController;
+  late AnimationController _pressController;
+  bool _isPressed = false;
+
+  final List<EmergencyType> emergencyTypes = [
+    EmergencyType(
+      name: 'Medical',
+      icon: Icons.medical_services_outlined,
+      color: Color(0xFF4CAF50),
     ),
-    Guard(
-      name: 'حارس تنفيذي',
-      description: 'متخصص في حماية الشخصيات الهامة',
-      lottieAsset: 'assets/animations/executive_guard.json',
-      hourlyRate: 40.0,
+    EmergencyType(
+      name: 'Fire',
+      icon: Icons.local_fire_department_outlined,
+      color: Color(0xFFFF5722),
     ),
-    Guard(
-      name: 'حارس الفعاليات',
-      description: 'خبير في تأمين الفعاليات والمناسبات',
-      lottieAsset: 'assets/animations/Animation - 1741306603791.json',
-      hourlyRate: 35.0,
+    EmergencyType(
+      name: 'Natural disaster',
+      icon: Icons.waves_outlined,
+      color: Color(0xFF009688),
+    ),
+    EmergencyType(
+      name: 'Accident',
+      icon: Icons.car_crash_outlined,
+      color: Color(0xFF2196F3),
+    ),
+    EmergencyType(
+      name: 'Violence',
+      icon: Icons.flash_on_outlined,
+      color: Color(0xFFE91E63),
+    ),
+    EmergencyType(
+      name: 'Rescue',
+      icon: Icons.support_outlined,
+      color: Color(0xFFFFC107),
     ),
   ];
 
-  void _nextPage() {
-    if (_currentPage < guardTypes.length - 1) {
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
-  }
+  @override
+  void initState() {
+    super.initState();
 
-  void _previousPage() {
-    if (_currentPage > 0) {
-      _pageController.previousPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
-  }
+    // Wave animation controller
+    _waveController = AnimationController(
+      duration: const Duration(milliseconds: 2000),
+      vsync: this,
+    )..repeat();
 
-  void _selectGuard() {
-    // Navigate to details screen
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (context) =>
-                GuardDetailsScreen(selectedGuard: guardTypes[_currentPage]),
-      ),
+    // Press animation controller
+    _pressController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
     );
+  }
+
+  @override
+  void dispose() {
+    _waveController.dispose();
+    _pressController.dispose();
+    super.dispose();
+  }
+
+  void _onSOSPressed() {
+    setState(() {
+      _isPressed = true;
+    });
+    _pressController.forward();
+    HapticFeedback.heavyImpact();
+
+    // Simulate button release after 200ms
+    Future.delayed(const Duration(milliseconds: 200), () {
+      if (mounted) {
+        setState(() {
+          _isPressed = false;
+        });
+        _pressController.reverse();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // Full screen PageView
-          PageView.builder(
-            controller: _pageController,
-            onPageChanged: (int page) {
-              setState(() {
-                _currentPage = page;
-              });
-            },
-            itemCount: guardTypes.length,
-            itemBuilder: (context, index) {
-              return Stack(
-                fit: StackFit.expand,
-                children: [
-                  // Background color
-                  Container(color: Colors.black),
-                  // Lottie Animation
-                  Center(
-                    child: Lottie.asset(
-                      guardTypes[index].lottieAsset,
-                      height: MediaQuery.of(context).size.height * 0.5,
-                      fit: BoxFit.contain,
-                      repeat: true,
-                    ),
-                  ),
-                  // Gradient overlay for better text visibility
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withOpacity(0.7),
-                        ],
+      backgroundColor: Color(0xFFF5F7FA),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            children: [
+              const SizedBox(height: 40),
+              // SOS Button with Sound Waves
+              Center(
+                child: SizedBox(
+                  width: 200,
+                  height: 200,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Sound Waves
+                      ...List.generate(3, (index) {
+                        return AnimatedBuilder(
+                          animation: _waveController,
+                          builder: (context, child) {
+                            final double delay = index * 0.3;
+                            final double progress =
+                                (_waveController.value + delay) % 1.0;
+
+                            return Opacity(
+                              opacity: math.max(0, 1 - progress),
+                              child: Transform.scale(
+                                scale: 0.5 + (progress * 0.8),
+                                child: Container(
+                                  width: 160,
+                                  height: 160,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Color(0xFFF87C6D).withOpacity(0.5),
+                                      width: 2,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      }),
+
+                      // SOS Button
+                      GestureDetector(
+                        onTapDown: (_) => _onSOSPressed(),
+                        child: AnimatedBuilder(
+                          animation: _pressController,
+                          builder: (context, child) {
+                            final scale = 1.0 - (_pressController.value * 0.05);
+
+                            return Transform.scale(
+                              scale: scale,
+                              child: Container(
+                                width: 160,
+                                height: 160,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.2),
+                                      spreadRadius: 1,
+                                      blurRadius: 15,
+                                      offset: const Offset(0, 5),
+                                    ),
+                                  ],
+                                ),
+                                child: Center(
+                                  child: Container(
+                                    width: 120,
+                                    height: 120,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color:
+                                          _isPressed
+                                              ? Color(
+                                                0xFFF87C6D,
+                                              ).withOpacity(0.8)
+                                              : Color(0xFFF87C6D),
+                                    ),
+                                    child: const Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'SOS',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 32,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Press 5 seconds',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                  // Content
-                  Positioned(
-                    left: 24,
-                    right: 24,
-                    bottom: 48,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'اختر نوع الحارس',
-                          style: Theme.of(context).textTheme.headlineSmall
-                              ?.copyWith(color: Colors.white),
-                          textAlign: TextAlign.right,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          guardTypes[index].description,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(color: Colors.white70),
-                          textAlign: TextAlign.right,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          '${guardTypes[index].hourlyRate.toStringAsFixed(2)} \$ / ساعة',
-                          style: Theme.of(
-                            context,
-                          ).textTheme.titleMedium?.copyWith(
-                            color: Colors.greenAccent,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.right,
-                        ),
-                        const SizedBox(height: 24),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.horizontal(
-                                    left: Radius.circular(20),
-                                    right: Radius.circular(20),
-                                  ),
-                                  color: Colors.black.withOpacity(0.6),
-                                ),
-                                child: IconButton(
-                                  icon: const Icon(
-                                    Icons.chevron_left,
-                                    color: Colors.white,
-                                  ),
-                                  onPressed:
-                                      _currentPage > 0 ? _previousPage : null,
-                                ),
-                              ),
-                              Text(
-                                guardTypes[index].name,
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(color: Colors.white),
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.horizontal(
-                                    left: Radius.circular(20),
-                                    right: Radius.circular(20),
-                                  ),
-                                  color: Colors.black.withOpacity(0.6),
-                                ),
-                                child: IconButton(
-                                  icon: const Icon(
-                                    Icons.chevron_right,
-                                    color: Colors.white,
-                                  ),
-                                  onPressed:
-                                      _currentPage < guardTypes.length - 1
-                                          ? _nextPage
-                                          : null,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.white30),
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: ElevatedButton(
-                            onPressed: _selectGuard,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.black,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                            child: const Text('اختيار'),
-                          ),
-                        ),
-                      ],
-                    ),
+                ),
+              ),
+              const SizedBox(height: 40),
+              // Emergency Type Question
+              const Text(
+                "What's your emergency?",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 30),
+              // Emergency Types Grid
+              Expanded(
+                child: GridView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    childAspectRatio: 1.0,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
                   ),
-                ],
-              );
-            },
+                  itemCount: emergencyTypes.length,
+                  itemBuilder: (context, index) {
+                    return EmergencyTypeCard(
+                      emergencyType: emergencyTypes[index],
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
-          // Back Button
-          Positioned(
-            top: 48,
-            left: 16,
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () {
-                Navigator.maybePop(context);
-              },
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 }
 
-class Guard {
-  final String name;
-  final String description;
-  final String lottieAsset;
-  final double hourlyRate;
+class EmergencyTypeCard extends StatefulWidget {
+  final EmergencyType emergencyType;
 
-  Guard({
-    required this.name,
-    required this.description,
-    required this.lottieAsset,
-    required this.hourlyRate,
-  });
-}
-
-class GuardDetailsScreen extends StatelessWidget {
-  final Guard selectedGuard;
-
-  const GuardDetailsScreen({Key? key, required this.selectedGuard})
+  const EmergencyTypeCard({Key? key, required this.emergencyType})
     : super(key: key);
 
   @override
+  State<EmergencyTypeCard> createState() => _EmergencyTypeCardState();
+}
+
+class _EmergencyTypeCardState extends State<EmergencyTypeCard> {
+  bool _isPressed = false;
+
+  @override
   Widget build(BuildContext context) {
-    // Implement your details screen here
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(selectedGuard.name),
-        backgroundColor: Colors.black,
+    return GestureDetector(
+      onTapDown: (_) {
+        setState(() => _isPressed = true);
+        HapticFeedback.mediumImpact();
+      },
+      onTapUp: (_) {
+        setState(() => _isPressed = false);
+      },
+      onTapCancel: () {
+        setState(() => _isPressed = false);
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        transform: Matrix4.identity()..scale(_isPressed ? 0.95 : 1.0),
+        child: Column(
+          children: [
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: widget.emergencyType.color,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                widget.emergencyType.icon,
+                size: 28,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              widget.emergencyType.name,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
-      body: Center(child: Text('تفاصيل الحارس')),
     );
   }
 }

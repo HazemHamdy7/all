@@ -1,6 +1,6 @@
 import 'package:all/cubits/on_boarding/on_boarding_state.dart';
-import 'package:all/screens/home/home_screen.dart';
- 
+import 'package:all/screens/auth/sing_in/sing_in.dart';
+  
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +23,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     } else {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+        MaterialPageRoute(builder: (context) => SignInScreen()),
       );
     }
   }

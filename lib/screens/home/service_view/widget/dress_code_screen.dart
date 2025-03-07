@@ -498,8 +498,7 @@ import 'package:all/cubits/dress_cubit/dress_code_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:all/constants/assets.dart';
-
+ 
 import 'dress_details_page.dart';
 
 class DressCodeScreen extends StatefulWidget {
@@ -585,6 +584,29 @@ class _DressCodeScreenState extends State<DressCodeScreen>
 
   void _chooseDressCode(DressCodeState state) {
     HapticFeedback.mediumImpact();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.green[300],
+        content: RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: 'Selected Dress Code: ',
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              TextSpan(
+                text: state.options[state.currentIndex].name,
+                style: const TextStyle(color: Colors.black),
+              ),
+            ],
+          ),
+        ),
+        duration: const Duration(seconds: 2),
+      ),
+    );
     Navigator.push(
       context,
       MaterialPageRoute(
