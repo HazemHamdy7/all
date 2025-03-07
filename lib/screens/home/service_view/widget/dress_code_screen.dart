@@ -498,8 +498,7 @@ import 'package:all/cubits/dress_cubit/dress_code_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:all/constants/assets.dart';
-
+ 
 import 'dress_details_page.dart';
 
 class DressCodeScreen extends StatefulWidget {

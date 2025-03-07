@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:all/screens/home/service_view/check_out/check_out.dart';
+import 'package:all/screens/splash/splash.dart';
+ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:all/screens/home/home_screen.dart';
 
 import 'cubits/dress_cubit/dress_code_cubit.dart';
 
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
         ),
         debugShowCheckedModeBanner: false,
         // Wrap HomeScreen (or your desired starting screen) with the BlocProvider.
-        home: HomeScreen(),
+        home: SplashScreen(),
       ),
     );
   }

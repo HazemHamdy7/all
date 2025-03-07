@@ -1,5 +1,4 @@
-import 'package:all/constants/assets.dart';
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 
 class FirstCardAtHome extends StatelessWidget {
   final String title;
