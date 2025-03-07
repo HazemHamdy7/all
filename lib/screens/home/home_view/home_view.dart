@@ -1,6 +1,7 @@
 import 'package:all/constants/assets.dart';
+import 'package:all/screens/home/home_view/widget/custom_button_sos.dart';
 import 'package:all/screens/home/home_view/widget/first_card_at_home.dart';
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -19,6 +20,8 @@ class HomeView extends StatelessWidget {
               onPressed: () {},
               image: Assets.imageLogo2,
             ),
+
+            CustomButtonSOS(),
           ],
         ),
       ),
