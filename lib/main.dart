@@ -1,9 +1,11 @@
-import 'package:all/screens/splash/splash.dart';
-import 'package:all/test.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:all/screens/home/home_screen.dart';
+
+import 'cubits/dress_cubit/dress_code_cubit.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -11,14 +13,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: Colors.black,
-        primarySwatch: Colors.grey,
+    return BlocProvider(
+      create: (context) => DressCodeCubit(),
+      child: MaterialApp(
+        title: 'Dress Code App',
+        theme: ThemeData(
+          brightness: Brightness.dark,
+          scaffoldBackgroundColor: Colors.black,
+          primarySwatch: Colors.grey,
+        ),
+        debugShowCheckedModeBanner: false,
+        // Wrap HomeScreen (or your desired starting screen) with the BlocProvider.
+        home: HomeScreen(),
       ),
-      debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
     );
   }
 }

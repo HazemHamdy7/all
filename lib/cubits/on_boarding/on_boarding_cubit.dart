@@ -1,5 +1,5 @@
 import 'package:all/cubits/on_boarding/on_boarding_state.dart';
-import 'package:all/screens/home/home.dart';
+import 'package:all/screens/home/home_screen.dart';
  
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';

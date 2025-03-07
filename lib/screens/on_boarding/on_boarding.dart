@@ -117,7 +117,7 @@ class OnboardingScreen extends StatelessWidget {
                         dotWidth: 8,
                         spacing: 4,
                         dotColor: Colors.grey,
-                        activeDotColor: Colors.indigo,
+                        activeDotColor: Colors.black,
                       ),
                     ),
                   ),
@@ -145,7 +145,7 @@ class OnboardingScreen extends StatelessWidget {
                     onPressed: () => cubit.navigateToNextPage(context, pages),
                     child:
                         state.currentPage == pages.length - 1
-                            ? Text('Get Started')
+                            ? Icon(Icons.check)
                             : Icon(Icons.arrow_forward),
                   ),
                 ),
