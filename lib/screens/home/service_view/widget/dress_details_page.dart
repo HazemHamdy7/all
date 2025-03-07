@@ -287,23 +287,6 @@
 //     super.dispose();
 //   }
 
-//   void _submitForm() {
-//     if (_formKey.currentState!.validate()) {
-//       // Process the form data
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(
-//           content: Text(
-//             'Dress details submitted for ${widget.selectedDressCode.name}',
-//           ),
-//           backgroundColor: Colors.green,
-//         ),
-//       );
-
-//       // Navigate back to the first screen or to a confirmation screen
-//       Navigator.pop(context);
-//     }
-//   }
-
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
@@ -542,11 +525,26 @@ import 'package:flutter/material.dart';
 
 class DressDetailsPage extends StatelessWidget {
   final DressCode dressCode;
-
-  const DressDetailsPage({super.key, required this.dressCode});
+  final _formKey = GlobalKey<FormState>();
+  DressDetailsPage({super.key, required this.dressCode});
 
   @override
   Widget build(BuildContext context) {
+    void _submitForm() {
+      if (_formKey.currentState!.validate()) {
+        // Process the form data
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Dress details submitted for ${dressCode.name}'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Navigate back to the first screen or to a confirmation screen
+        Navigator.pop(context);
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(dressCode.name),
@@ -599,7 +597,7 @@ class DressDetailsPage extends StatelessWidget {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          // Process submission here.
+                          
                         },
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
